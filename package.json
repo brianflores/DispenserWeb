@@ -1,0 +1,21 @@
+{
+  "name": "@brianflores/dispenserweb",
+  "version": "1.0.0",
+  "description": "Servidor web para configurar un dispenser de comida y bebida para mascotas",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brian Flores",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap-material-design": "^4.0.0-beta.3",
+    "express": "^4.16.2",
+    "mongoose": "^4.12.1",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.13.8",
+    "sequelize-cli": "^3.0.0",
+    "socket.io": "^2.0.3"
+  }
+}
