@@ -61,11 +61,10 @@ function procesarForm(req,res){
 var server = net.createServer(function(socket) {
     socket.setEncoding('utf8');
     tcpGuests.push(socket);
-    // Cuando se conecta la CIAA al servidor baja la ultima configuracion, por si hubo cambios. Esto no está funcionando por ahora.
-    models.Mensaje.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(msj) {
-            var mssj = msj.contenido;
-            console.log(mssj);
-            socket.write("Hola");
+    //Cuando la CIAA se conecta al servidor TCP, se le envía la última configuración, para chequear si hubo cambios.
+    models.Conf.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(conf) {
+            var config = conf[0];
+            socket.write(config.racion + ' | ' + config.hora_alarma + ' | ' + config.hora_actual);
 	        socket.pipe(socket);
         });
     socket.on('data',function(data){
@@ -76,7 +75,7 @@ var server = net.createServer(function(socket) {
                 console.log(msj.get({plain: true}))
             }
         )
-        socket.write('dijiste'+data);
+        socket.write('dijiste '+data);
     });
 }).listen(1337, '127.0.0.1'); 
 http.listen(8090, function(){
