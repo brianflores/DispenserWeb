@@ -13,22 +13,22 @@ app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res){
-            
+
     models.Mensaje.findAll({limit: 5, order: [['updatedAt', 'DESC']]}).then(function(mensajes) {
         models.Conf.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(conf) {
             res.render('index', {
                 title: 'Pet Center',
                 mensajes: mensajes,
-                conf: conf
+                conf: conf[0]
             })
         })
     })
             //res.sendFile(__dirname+'/public/index.html');
-        
+
 });
 app.post('/',(req,res) => {
     procesarForm(req,res);
-}); 
+});
 function procesarForm(req,res){
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
@@ -42,10 +42,20 @@ function procesarForm(req,res){
                 )
                 //Transmitir los cambios de configuracion a la CIAA
                 for (g in tcpGuests){
-                    tcpGuests[g].write(conf.racion + ' | ' + conf.hora_actual +' | '+ conf.hora_alarma);
-                }  
+                    var msj = undefined;
+                    if(conf.hora_actual != '' && conf.hora_alarma != ''){
+                        msj = 'A|'+conf.hora_actual+'|'+conf.hora_alarma+'|'+conf.racion;
+                    } else if(conf.hora_actual == '' && conf.hora_alarma == '') {
+                        msj = 'D|'+conf.racion;
+                    } else if(conf.hora_actual == ''){
+                        msj = 'C|'+conf.hora_alarma+'|'+conf.racion;
+                    } else {
+                        msj = 'B|'+conf.hora_actual+'|'+conf.racion;
+                    }
+                    tcpGuests[g].write(msj);
+                }
             }
-            
+
         )
     });
     models.Mensaje.findAll({limit: 5, order: [['updatedAt', 'DESC']]}).then(function(mensajes) {
@@ -53,7 +63,7 @@ function procesarForm(req,res){
                 res.render('index', {
                 title: 'Pet Center',
                 mensajes: mensajes,
-                conf: conf
+                conf: conf[0]
                 })
             })
     })
@@ -64,7 +74,15 @@ var server = net.createServer(function(socket) {
     //Cuando la CIAA se conecta al servidor TCP, se le envía la última configuración, para chequear si hubo cambios.
     models.Conf.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(conf) {
             var config = conf[0];
-            socket.write(config.racion + ' | ' + config.hora_alarma + ' | ' + config.hora_actual);
+            var msj = undefined;
+            if(config.hora_alarma == ''){
+              msj='D|'+config.racion;
+
+            }
+            else {
+              msj='C|'+config.hora_alarma+'|'+config.racion;
+            }
+            socket.write(msj);
 	        socket.pipe(socket);
         });
     socket.on('data',function(data){
@@ -75,9 +93,9 @@ var server = net.createServer(function(socket) {
                 console.log(msj.get({plain: true}))
             }
         )
-        socket.write('dijiste '+data);
+        //socket.write('dijiste '+data);
     });
-}).listen(1337, '127.0.0.1'); 
+}).listen(1337, '127.0.0.1');
 http.listen(8090, function(){
     console.log('server http en 8090');
 });

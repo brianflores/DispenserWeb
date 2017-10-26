@@ -32,7 +32,6 @@ block content
                         div(class="container")
                             h1(class="display-3") Configuración actual
                             div(class="container")
-                            each c in conf
                                 ul(class="nav nav-tabs")
                                     li
                                         h3 &nbsp;
@@ -42,12 +41,12 @@ block content
                                     li
                                         h3 :&nbsp;   
                                     li
-                                        h3(class="display-5 text-muted")= c.hora_alarma
+                                        h3(class="display-5 text-muted")= conf.hora_alarma
                                 ul(class="nav nav-tabs")
                                     li
                                         h3(class="display-5") Tamaño de ración:&nbsp;
                                     li
-                                        if c.racion == "pequenio"
+                                        if conf.racion == "pequenio"
                                             h3(class="display-5 text-muted") Pequeño
                                         else
                                             h3(class="display-5 text-muted") Grande
