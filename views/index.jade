@@ -41,17 +41,15 @@ block content
                                     li
                                         h3 :&nbsp;   
                                     li
-                                        if (typeof(conf.hora_alarma) !== 'undefined')
-                                            h3(class="display-5 text-muted")= conf.hora_alarma
+                                        h3(class="display-5 text-muted")= conf.hora_alarma
                                 ul(class="nav nav-tabs")
                                     li
                                         h3(class="display-5") Tamaño de ración:&nbsp;
                                     li
-                                        if (typeof(conf.racion) !== 'undefined')
-                                            if conf.racion == "pequenio"
-                                                h3(class="display-5 text-muted") Pequeño
-                                            else
-                                                h3(class="display-5 text-muted") Grande
+                                        if conf.racion == "pequenio"
+                                            h3(class="display-5 text-muted") Pequeño
+                                        else
+                                            h3(class="display-5 text-muted") Grande
                 h2 Últimos eventos
                 div(class="table-responsive")
                     table(class="table table-striped")
