@@ -32,21 +32,22 @@ block content
                         div(class="container")
                             h1(class="display-3") Configuración actual
                             div(class="container")
-                                if conf
                                 ul(class="nav nav-tabs")
-                                        li
-                                            h3 &nbsp;
-                                    ul(class="nav nav-tabs")
-                                        li 
-                                            h3(class="display-5") Hora de alimentación 
-                                        li
-                                            h3 :&nbsp;   
-                                        li
+                                    li
+                                        h3 &nbsp;
+                                ul(class="nav nav-tabs")
+                                    li 
+                                        h3(class="display-5") Hora de alimentación 
+                                    li
+                                        h3 :&nbsp;   
+                                    li
+                                        if conf.hora_alarma
                                             h3(class="display-5 text-muted")= conf.hora_alarma
-                                    ul(class="nav nav-tabs")
-                                        li
-                                            h3(class="display-5") Tamaño de ración:&nbsp;
-                                        li
+                                ul(class="nav nav-tabs")
+                                    li
+                                        h3(class="display-5") Tamaño de ración:&nbsp;
+                                    li
+                                        if conf.racion
                                             if conf.racion == "pequenio"
                                                 h3(class="display-5 text-muted") Pequeño
                                             else
