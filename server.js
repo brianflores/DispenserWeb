@@ -96,6 +96,6 @@ var server = net.createServer(function(socket) {
         //socket.write('dijiste '+data);
     });
 }).listen(1337, '127.0.0.1');
-http.listen(8090, function(){
+http.listen(process.env.PORT ||8090, function(){
     console.log('server http en 8090');
 });
