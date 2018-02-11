@@ -16,6 +16,10 @@ app.get('/', function(req, res){
 
     models.Mensaje.findAll({limit: 5, order: [['updatedAt', 'DESC']]}).then(function(mensajes) {
         models.Conf.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(conf) {
+            if (typeof(conf[0]) == "undefined") {
+                conf[0].hora_alarma = "11:00";
+                conf[0].racion = "Grande";
+            }
             res.render('index', {
                 title: 'Pet Center',
                 mensajes: mensajes,
