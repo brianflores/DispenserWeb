@@ -44,13 +44,13 @@ function procesarForm(req,res){
                 for (g in tcpGuests){
                     var msj = undefined;
                     if(conf.hora_actual != '' && conf.hora_alarma != ''){
-                        msj = 'A|'+conf.hora_actual+'|'+conf.hora_alarma+'|'+conf.racion;
+                        msj = '|A|'+conf.hora_actual+'|'+conf.hora_alarma+'|'+conf.racion+'|||\r\n';
                     } else if(conf.hora_actual == '' && conf.hora_alarma == '') {
-                        msj = 'D|'+conf.racion;
+                        msj = '|D|'+conf.racion+'|||\r\n';
                     } else if(conf.hora_actual == ''){
-                        msj = 'C|'+conf.hora_alarma+'|'+conf.racion;
+                        msj = '|C|'+conf.hora_alarma+'|'+conf.racion+'|||\r\n';
                     } else {
-                        msj = 'B|'+conf.hora_actual+'|'+conf.racion;
+                        msj = '|B|'+conf.hora_actual+'|'+conf.racion+'|||\r\n';
                     }
                     tcpGuests[g].write(msj);
                 }
@@ -71,31 +71,40 @@ function procesarForm(req,res){
 var server = net.createServer(function(socket) {
     socket.setEncoding('utf8');
     tcpGuests.push(socket);
-    //Cuando la CIAA se conecta al servidor TCP, se le envía la última configuración, para chequear si hubo cambios.
-    models.Conf.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(conf) {
-            var config = conf[0];
-            var msj = undefined;
-            if(config.hora_alarma == ''){
-              msj='D|'+config.racion;
-
-            }
-            else {
-              msj='C|'+config.hora_alarma+'|'+config.racion;
-            }
-            socket.write(msj);
-	        socket.pipe(socket);
-        });
     socket.on('data',function(data){
         //La CIAA envia un mensaje y el servidor lo guarda para mostrarlo en la tabla de eventos.
-        console.log(data);
-        models.Mensaje.create({contenido: data}).then(
-            msj =>{
-                console.log(msj.get({plain: true}))
-            }
-        )
+        //console.log(data);
+        if (data.slice(0, 7) == "getData"){
+            models.Conf.findAll({limit:1,order: [['updatedAt', 'DESC']] }).then(function(conf) {
+                         var config = conf[0];
+                         for (g in tcpGuests){
+                            var msj = undefined;
+                            if(config.hora_actual != '' && config.hora_alarma != ''){
+                                msj = '|A|'+config.hora_actual+'|'+config.hora_alarma+'|'+config.racion+'|||\r\n';
+                            } else if(config.hora_actual == '' && config.hora_alarma == '') {
+                                msj = '|D|'+config.racion+'|||\r\n';
+                            } else if(config.hora_actual == ''){
+                                msj = '|C|'+config.hora_alarma+'|'+config.racion+'|||\r\n';
+                            } else {
+                                msj = '|B|'+config.hora_actual+'|'+config.racion+'|||\r\n';
+                            }
+                            tcpGuests[g].write(msj);
+                        }
+                 });
+        } else{
+            models.Mensaje.create({contenido: data.slice(0, -1)}).then(
+                msj =>{
+                    console.log(msj.get({plain: true}))
+                })  
+        }
+       // tcpGuests.splice(0, 1);
         //socket.write('dijiste '+data);
     });
-}).listen(1337, '127.0.0.1');
+    socket.on("error", function(err) {
+    console.log("Caught flash policy server socket error: ");
+    console.log(err.stack)
+    });
+}).listen(1337, '192.168.0.105');
 http.listen(process.env.PORT ||8090, function(){
     console.log('server http en 8090');
 });
