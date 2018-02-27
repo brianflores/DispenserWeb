@@ -23,7 +23,6 @@ app.get('/', function(req, res){
             })
         })
     })
-            //res.sendFile(__dirname+'/public/index.html');
 
 });
 app.post('/',(req,res) => {
@@ -79,15 +78,12 @@ var server = net.createServer(function(socket) {
                          var config = conf[0];
                          for (g in tcpGuests){
                             var msj = undefined;
-                            if(config.hora_actual != '' && config.hora_alarma != ''){
-                                msj = '|A|'+config.hora_actual+'|'+config.hora_alarma+'|'+config.racion+'|||\r\n';
-                            } else if(config.hora_actual == '' && config.hora_alarma == '') {
-                                msj = '|D|'+config.racion+'|||\r\n';
-                            } else if(config.hora_actual == ''){
-                                msj = '|C|'+config.hora_alarma+'|'+config.racion+'|||\r\n';
-                            } else {
-                                msj = '|B|'+config.hora_actual+'|'+config.racion+'|||\r\n';
-                            }
+                            if(config.hora_alarma == ''){
+                                msj='|D|'+config.racion+'|||\r\n';
+                              }
+                              else {
+                                msj='|C|'+config.hora_alarma+'|'+config.racion+'|||\r\n';
+                              }
                             tcpGuests[g].write(msj);
                         }
                  });
@@ -97,14 +93,12 @@ var server = net.createServer(function(socket) {
                     console.log(msj.get({plain: true}))
                 })  
         }
-       // tcpGuests.splice(0, 1);
-        //socket.write('dijiste '+data);
     });
     socket.on("error", function(err) {
     console.log("Caught flash policy server socket error: ");
     console.log(err.stack)
     });
-}).listen(1337, '192.168.0.105');
+}).listen(1337, '192.168.0.205');
 http.listen(process.env.PORT ||8090, function(){
     console.log('server http en 8090');
 });
