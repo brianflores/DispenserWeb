@@ -87,6 +87,10 @@ var server = net.createServer(function(socket) {
                             tcpGuests[g].write(msj);
                         }
                  });
+            models.Mensaje.create({contenido: "Se conecto el dispenser"}).then(
+            msj =>{
+                console.log(msj.get({plain: true}))
+            })    
         } else{
             models.Mensaje.create({contenido: data.slice(0, -1)}).then(
                 msj =>{
